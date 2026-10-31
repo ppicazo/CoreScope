@@ -100,6 +100,25 @@ forks and get no preview.
 A preview is code from a branch, so keep previews anonymous (`AUTH=false`),
 pointed at a staging server if you have one.
 
+### Workers instead of Pages
+
+Cloudflare also serves static sites as a Worker with static assets, built by
+Workers Builds. `wrangler.jsonc` at the repository root describes that Worker:
+it is named `corescope`, serves `dist/pages`, and has the `previews` block that
+`wrangler preview` needs. To use it:
+
+- name the Worker `corescope` (Workers Builds refuses a name that differs from
+  `wrangler.jsonc`);
+- build command: `bash scripts/pages/assemble.sh`;
+- deploy command: `npx wrangler deploy`; non-production branches:
+  `npx wrangler preview`;
+- the same variables as in step 6, as build variables.
+
+A preview is served at `<preview>-corescope.<subdomain>.workers.dev`, or at
+`<preview>.<custom domain>` when the Worker has a custom domain for previews.
+The CORS entries for those are `https://*.<subdomain>.workers.dev` (every
+Worker on your account) or `https://*.<custom domain>`.
+
 ## Server
 
 Append the static origin to the embed CORS list and restart:

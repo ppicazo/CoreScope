@@ -1,0 +1,13 @@
+// Cloudflare Workers static assets: a Worker named "corescope" serves the
+// static build that scripts/pages/assemble.sh writes to dist/pages. Only a
+// fork that deploys the UI with Workers Builds uses this; Docker deployments
+// and Pages projects ignore it. See deploy/cloudflare-pages/README.md.
+{
+  "name": "corescope",
+  "compatibility_date": "2026-10-31",
+  "assets": {
+    "directory": "./dist/pages"
+  },
+  // Lets Workers Builds run `npx wrangler preview` for other branches.
+  "previews": {}
+}

@@ -20,19 +20,40 @@ on the server.
   `text/plain` (so the browser sends no preflight), and hides login, account and
   admin controls in favour of an "available on classic" link.
 
-## Cloudflare Pages project (Git integration)
+## Deploying from a fork
 
-These settings live in the Cloudflare dashboard, not in the repository, so
-record any change here.
+This repository is the software, not any one CoreScope instance: it has no
+Pages project and deploys nothing. Each instance (a region, the flagship)
+deploys from its own fork. Pages needs that anyway: its GitHub App is installed
+on a repository you administer.
 
-1. Install the Cloudflare Pages GitHub App on this repository only.
-2. Create a Pages project from the repository on the Free plan:
-   - production branch: `master`;
+The fork carries **no code changes**. Every setting lives in the Pages project
+variables, and deploying means moving a branch to a commit that already exists
+upstream.
+
+### One-time setup
+
+1. Fork this repository into an account or org your maintainers administer.
+2. In the fork, turn GitHub Actions off (Settings → Actions). Otherwise syncing
+   `master` runs this repository's CI and deploy workflows there, which fail
+   without its secrets. Pages builds do not use Actions.
+3. Create the deploy branches `stage` and `prod`, and protect `prod` so only
+   maintainers can move it.
+4. Install the Cloudflare Pages GitHub App on the fork only.
+5. Create one Pages project per deploy branch, on the Free plan:
+
+   | Project | Production branch | Serves | API |
+   |---|---|---|---|
+   | e.g. `corescope-web-stage` | `stage` | your staging frontend | your staging server |
+   | e.g. `corescope-web-prod` | `prod` | your production frontend | your production server |
+
+   For both:
    - build command: `bash scripts/pages/assemble.sh`;
    - build output directory: `dist/pages`; root directory: blank;
-   - build watch paths, include: `public/*`, `scripts/pages/*`,
-     `deploy/cloudflare-pages/*`.
-3. Environment variables (Production, and Preview if previews are on):
+   - preview branches: None.
+
+   One project on `prod` is enough if you have no staging server.
+6. Environment variables (Production environment) for each project:
 
    | Name | Example | Notes |
    |---|---|---|
@@ -43,11 +64,27 @@ record any change here.
    | `SKIP_DEPENDENCY_INSTALL` | `1` | `assemble.sh` needs no npm packages |
 
    `COMMIT` defaults to the first 7 characters of `CF_PAGES_COMMIT_SHA`.
-4. Add the custom domain (for example `beta.example.org`). The UI uses absolute
-   paths such as `/icons/…`, so it must be served at the root of a hostname.
+7. Add a custom domain to each project (for example `beta.example.org`). The
+   UI uses absolute paths such as `/icons/…`, so it must be served at the root
+   of a hostname.
 
-Pages builds every push to `master` that touches the watch paths. Pull requests
-from forks get no preview deployment.
+### Deploying
+
+Keep each frontend on the version its server runs: `prod` on the release tag
+your production containers run, `stage` on upstream `master` if staging runs
+the master image. Upgrade the server first, then move the branch. Move branches
+by fast-forward, so they stay identical to upstream commits (`upstream` is this
+repository, `region` is your fork):
+
+```bash
+git fetch upstream --tags
+git push region v3.16.0:refs/heads/prod
+git push region upstream/master:refs/heads/stage
+```
+
+Only move `stage` to a `master` commit whose CI passed. A pull request into
+`prod` also works if you want a review step, but its merge commits make the
+branch drift from upstream. Each project builds only when its branch moves.
 
 ## Server
 
@@ -79,12 +116,14 @@ make dev-split
 
 The UI on `http://localhost:8788` calls an API-only server on
 `http://localhost:3000` cross-origin, with no proxy. CI runs
-`tests/e2e/test-split-anonymous-e2e.js` the same way on E2E shard 1.
+`tests/e2e/test-split-anonymous-e2e.js` the same way on E2E shard 1. Pull requests
+get no preview deployment; this is how to try one.
 
 ## Roll back
 
-- **The UI:** in the Pages dashboard, roll back to the previous deployment. To
-  hold it there while `master` is fixed, pause automatic production deployments.
+- **The UI:** in the Pages dashboard, roll back to the previous deployment, or
+  move the deploy branch back to the previous tag
+  (`git push --force-with-lease region v3.15.0:refs/heads/prod`).
 - **Access from the static origin:** remove it from `CORS_ALLOWED_ORIGINS` and
   restart. The static UI then shows "Can't reach the CoreScope API"; the classic
   UI and embeds are unaffected.

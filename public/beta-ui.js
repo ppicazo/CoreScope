@@ -17,15 +17,17 @@
     return Object.prototype.hasOwnProperty.call(BADGES, channel) ? BADGES[channel] : null;
   }
 
-  // issueUrl opens .github/ISSUE_TEMPLATE/beta-feedback.yml with the fields a
-  // report needs and nobody remembers to type: page, channel, commit, browser.
+  // issueUrl opens a new issue pre-filled with what a report needs and nobody
+  // remembers to type: page, channel, commit, browser. GitHub's title and body
+  // parameters do this without an issue template in the repository.
   function issueUrl(channel, commit, page, browser) {
-    var q = 'template=beta-feedback.yml' +
-      '&channel=' + encodeURIComponent(channel || '') +
-      '&commit=' + encodeURIComponent(commit || 'unknown') +
-      '&page=' + encodeURIComponent(page || '') +
-      '&browser=' + encodeURIComponent(browser || '');
-    return REPO + '/issues/new?' + q;
+    var body = '**Page:** ' + (page || '') + '\n\n' +
+      '**What I expected (what the classic site does):**\n\n\n' +
+      '**What happened on the ' + (channel || 'beta') + ' frontend:**\n\n\n' +
+      '---\n' +
+      'Channel: ' + (channel || '') + ' · Commit: ' + (commit || 'unknown') + ' · Browser: ' + (browser || '') + '\n';
+    return REPO + '/issues/new?title=' + encodeURIComponent('[' + (channel || 'beta') + '] ') +
+      '&body=' + encodeURIComponent(body);
   }
 
   // classicOnlyHtml stands in for a control this build cannot offer, e.g.

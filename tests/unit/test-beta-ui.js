@@ -80,15 +80,16 @@ test('beta, next and dev get a labelled badge right after the brand', () => {
   }
 });
 
-test('the badge opens the beta issue form with page, channel, commit and browser filled in', () => {
+test('the badge opens a new issue with page, channel, commit and browser filled in, no template needed', () => {
   const { doc } = load({ channel: 'beta', commit: 'abc1234', apiBase: 'https://api.example', auth: false }, '#/nodes/ab?x=1');
   const url = new URL(doc.getElementById('csChannelBadge').href);
   assert.strictEqual(url.origin + url.pathname, 'https://github.com/Kpa-clawbot/CoreScope/issues/new');
-  assert.strictEqual(url.searchParams.get('template'), 'beta-feedback.yml');
-  assert.strictEqual(url.searchParams.get('channel'), 'beta');
-  assert.strictEqual(url.searchParams.get('commit'), 'abc1234');
-  assert.strictEqual(url.searchParams.get('page'), '#/nodes/ab?x=1');
-  assert.strictEqual(url.searchParams.get('browser'), 'TestBrowser/1.0');
+  assert.strictEqual(url.searchParams.get('template'), null);
+  assert.strictEqual(url.searchParams.get('title'), '[beta] ');
+  const body = url.searchParams.get('body');
+  assert.ok(body.startsWith('**Page:** #/nodes/ab?x=1\n'), body);
+  assert.ok(body.includes('What happened on the beta frontend'), body);
+  assert.ok(body.endsWith('Channel: beta · Commit: abc1234 · Browser: TestBrowser/1.0\n'), body);
 });
 
 test('the classic link appears only with a classic URL, and both links follow the hash', () => {
@@ -100,7 +101,7 @@ test('the classic link appears only with a classic URL, and both links follow th
   ctx.location.hash = '#/map';
   listeners.hashchange.forEach((fn) => fn());
   assert.strictEqual(doc.getElementById('csClassicLink').href, 'https://analyzer.example/#/map');
-  assert.strictEqual(new URL(doc.getElementById('csChannelBadge').href).searchParams.get('page'), '#/map');
+  assert.ok(new URL(doc.getElementById('csChannelBadge').href).searchParams.get('body').startsWith('**Page:** #/map\n'));
 });
 
 test('renderNav runs once', () => {

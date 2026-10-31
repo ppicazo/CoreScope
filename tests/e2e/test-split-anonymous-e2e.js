@@ -121,12 +121,13 @@ async function run() {
     assert(!seen.some((s) => s.method === 'OPTIONS'), 'a preflight was sent');
   });
 
-  await test('the channel badge is shown and links to the beta issue form', async () => {
+  await test('the channel badge is shown and opens a pre-filled issue', async () => {
     await page.goto(SPLIT + '/#/nodes', { waitUntil: 'domcontentloaded' });
     const badge = page.locator('#csChannelBadge');
     await badge.waitFor({ timeout: 5000 });
     const href = await badge.getAttribute('href');
-    assert(/issues\/new\?template=beta-feedback\.yml/.test(href) && /page=%23%2Fnodes/.test(href), 'badge href: ' + href);
+    const body = new URL(href).searchParams.get('body') || '';
+    assert(/\/issues\/new\?title=/.test(href) && body.includes('**Page:** #/nodes') && body.includes('Channel: dev'), 'badge href: ' + href);
     const classic = await page.locator('#csClassicLink').getAttribute('href');
     assert(classic === API + '/#/nodes', 'classic link: ' + classic);
   });

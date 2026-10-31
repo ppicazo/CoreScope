@@ -171,7 +171,28 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
 
+  // Anonymous static build on a server with accounts: the nav offers the
+  // classic site's login, on the same page, instead of a login of its own.
+  function renderClassicLogin() {
+    var href = CSApi.classicHref('#/account/login');
+    var right = document.querySelector('.top-nav .nav-right');
+    if (!href || !right || document.getElementById('accountWrap')) return;
+    var wrap = document.createElement('div');
+    wrap.id = 'accountWrap';
+    wrap.className = 'nav-account-wrap';
+    var a = document.createElement('a');
+    a.className = 'nav-account-btn';
+    a.id = 'accountToggle';
+    a.href = href;
+    a.title = 'Accounts live on the classic site';
+    a.innerHTML = icon('ph-user-circle') + '<span class="nav-account-label">Log in on classic</span>';
+    wrap.appendChild(a);
+    right.insertBefore(wrap, document.getElementById('hamburger'));
+    window.dispatchEvent(new CustomEvent('cs-auth-control-added'));
+  }
+
   state.ready = Promise.resolve(window.MeshConfigReady).then(function () {
+    if (window.MC_ACCOUNTS_ON_CLASSIC) { renderClassicLogin(); return null; }
     if (!window.MC_USER_MGMT || !window.MC_USER_MGMT.enabled) return null;
     state.enabled = true;
     renderControl();

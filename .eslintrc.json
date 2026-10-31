@@ -19,6 +19,7 @@
     "ChannelDecrypt": "readonly",
     "ChannelQR": "readonly",
     "Chart": "readonly",
+    "CSBeta": "readonly",
     "DIST_THRESHOLDS": "readonly",
     "DragManager": "readonly",
     "EXTERNAL_URLS": "readonly",

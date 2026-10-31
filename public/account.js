@@ -460,6 +460,7 @@
   };
 
   function init(app, routeParam) {
+    if (CSApi.anonymous) { app.innerHTML = shell('Accounts', CSBeta.classicOnlyHtml('Logging in')); return; }
     if (!window.CSAuth) { app.innerHTML = shell('Accounts', '<p>Accounts are not available.</p>'); return; }
     app.innerHTML = shell('Accounts', '<p>Loading…</p>');
     // A page left before the session is known must not render over the next one (#2230).

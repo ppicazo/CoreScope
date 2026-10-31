@@ -50,6 +50,7 @@
     statusGreen: '--status-green', statusYellow: '--status-yellow', statusRed: '--status-red',
     statusYellowText: '--status-yellow-text', statusRedText: '--status-red-text',
     statusGreenTintText: '--status-green-tint-text',
+    betaBadgeBg: '--beta-badge-bg', betaBadgeText: '--beta-badge-text',
     surface1: '--surface-1', surface2: '--surface-2', surface3: '--surface-3',
     sectionBg: '--section-bg',
     cardBg: '--card-bg', contentBg: '--content-bg', detailBg: '--detail-bg',
@@ -1749,6 +1750,7 @@
         '<div style="position:absolute;top:7px;right:7px;background:rgba(255,255,255,0.88);border-radius:4px;padding:3px 8px;font-size:11px;color:#444;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.15)"><svg class="ph-icon" aria-hidden="true"><use href="/icons/phosphor-sprite.svg#ph-magnifying-glass"/></svg> click to expand</div>' +
       '</div>' +
       '<div id="cv2-gf-status" style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Loading current filter…</div>' +
+      (window.CSApi && CSApi.anonymous ? CSBeta.classicOnlyHtml('Editing the geographic filter') : '') +
       // Edit controls — hidden until server confirms write access (writeEnabled=true)
       '<div id="cv2-gf-edit" style="display:none">' +
         '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">' +
@@ -1963,7 +1965,10 @@
 
   // The editor is usable with a write-capable API key (gf.writeEnabled) or an
   // admin session (server: requireAdmin accepts both).
+  // An anonymous static build cannot send the API key or the session in a
+  // way the server accepts cross-origin, so it never offers the editor.
   function _gfCanEdit(gf, csAuth) {
+    if (window.CSApi && CSApi.anonymous) return false;
     return !!((gf && gf.writeEnabled) || (csAuth && csAuth.isAdmin()));
   }
 

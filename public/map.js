@@ -839,7 +839,8 @@
     // Affinity Debug overlay toggle — shown only when debugAffinity config is on or localStorage override
     (function initAffinityDebug() {
       var label = document.getElementById('mcAffinityDebugLabel');
-      var show = (window.CLIENT_CONFIG && window.CLIENT_CONFIG.debugAffinity) || localStorage.getItem('meshcore-affinity-debug') === 'true';
+      // Needs the admin API key, which an anonymous static build cannot send.
+      var show = !CSApi.anonymous && ((window.CLIENT_CONFIG && window.CLIENT_CONFIG.debugAffinity) || localStorage.getItem('meshcore-affinity-debug') === 'true');
       if (show && label) label.style.display = '';
       var cb = document.getElementById('mcAffinityDebug');
       if (!cb) return;

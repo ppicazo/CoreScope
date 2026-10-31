@@ -1,0 +1,46 @@
+name: Beta frontend feedback
+description: Something looks or works differently on the beta frontend (the static build) than on the classic site.
+title: "[beta] "
+labels: ["beta-frontend"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying the beta. The badge in the beta's nav opens this form with the page, channel, commit and browser filled in.
+        If the same thing happens on the classic site too, please open a regular issue instead.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address after the # (for example #/nodes or #/packets?region=SJC).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What the classic site shows or does here.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened on the beta
+      description: Screenshots help. Include any message the page showed, such as "Can't reach the CoreScope API".
+    validations:
+      required: true
+  - type: input
+    id: channel
+    attributes:
+      label: Channel
+      description: Filled in from the badge (beta, next or dev).
+  - type: input
+    id: commit
+    attributes:
+      label: Commit
+      description: Filled in from the badge.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: Filled in from the badge; add the device if it matters.

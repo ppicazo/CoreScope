@@ -359,7 +359,10 @@ function renderVersionCard(health) {
         html += '</tbody></table></div>';
       }
 
-      html += `<div style="margin-top:16px"><button id="perfReset" style="padding:8px 16px;cursor:pointer">Reset Stats</button> <button id="perfRefresh" style="padding:8px 16px;cursor:pointer">Refresh</button></div>`;
+      // Reset needs an admin; an anonymous static build cannot be one.
+      const resetHtml = CSApi.anonymous ? '' : '<button id="perfReset" style="padding:8px 16px;cursor:pointer">Reset Stats</button> ';
+      html += `<div style="margin-top:16px">${resetHtml}<button id="perfRefresh" style="padding:8px 16px;cursor:pointer">Refresh</button></div>`;
+      if (CSApi.anonymous) html += CSBeta.classicOnlyHtml('Resetting server stats');
       el.innerHTML = html;
 
       document.getElementById('perfReset')?.addEventListener('click', async () => {

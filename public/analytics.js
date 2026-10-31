@@ -506,7 +506,7 @@
     `;
 
     // Affinity stats widget — fetch and append if debugAffinity enabled
-    var showDebug = (window.CLIENT_CONFIG && window.CLIENT_CONFIG.debugAffinity) || localStorage.getItem('meshcore-affinity-debug') === 'true';
+    var showDebug = !CSApi.anonymous && ((window.CLIENT_CONFIG && window.CLIENT_CONFIG.debugAffinity) || localStorage.getItem('meshcore-affinity-debug') === 'true');
     if (showDebug) {
       var apiKey = localStorage.getItem('meshcore-api-key') || '';
       CSApi.fetch('/api/debug/affinity', { headers: { 'X-API-Key': apiKey } })

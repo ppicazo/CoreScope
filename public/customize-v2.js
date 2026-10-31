@@ -2004,7 +2004,7 @@
     var headers = _gfAuthHeaders(container, { 'Content-Type': 'application/json' }, window.CSAuth);
     if (!headers) { _gfMsg(container, 'API key required to save.', false); return; }
     var bufferKm = parseFloat((container.querySelector('#cv2-gf-buffer') || {}).value) || 0;
-    fetch('/api/config/geo-filter', {
+    CSApi.fetch('/api/config/geo-filter', {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify({ polygon: _gfPoints, bufferKm: bufferKm })
@@ -2020,7 +2020,7 @@
     var headers = _gfAuthHeaders(container, { 'Content-Type': 'application/json' }, window.CSAuth);
     if (!headers) { _gfMsg(container, 'API key required.', false); return; }
     if (!confirm('Remove geo filter? All nodes will be allowed through.')) return;
-    fetch('/api/config/geo-filter', {
+    CSApi.fetch('/api/config/geo-filter', {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify({ polygon: null })
@@ -2049,7 +2049,7 @@
     if (!headers) { _gfPruneMsg(container, 'API key required.', false); return; }
     var btn = container.querySelector('#cv2-gf-prune-preview');
     if (btn) btn.textContent = 'Loading…';
-    fetch('/api/admin/prune-geo-filter', {
+    CSApi.fetch('/api/admin/prune-geo-filter', {
       method: 'POST',
       headers: headers
     }).then(function (r) {
@@ -2088,7 +2088,7 @@
     var count = _gfPruneNodes.length;
     if (!confirm('Delete ' + count + ' node' + (count !== 1 ? 's' : '') + ' from the database? This cannot be undone.')) return;
     var pubkeys = _gfPruneNodes.map(function (n) { return n.pubkey; });
-    fetch('/api/admin/prune-geo-filter?confirm=true', {
+    CSApi.fetch('/api/admin/prune-geo-filter?confirm=true', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({ pubkeys: pubkeys })

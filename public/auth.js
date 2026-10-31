@@ -7,7 +7,7 @@
   var state = { enabled: false, user: null, ready: null };
 
   function request(method, path, body) {
-    var opts = { method: method, credentials: 'same-origin', headers: { 'Accept': 'application/json' } };
+    var opts = { method: method, headers: { 'Accept': 'application/json' } };
     if (body !== undefined) {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);
@@ -15,7 +15,7 @@
     if (method !== 'GET' && state.user && state.user.csrfToken) {
       opts.headers['X-CS-CSRF'] = state.user.csrfToken;
     }
-    return fetch(path, opts).then(function (res) {
+    return CSApi.fetch(path, opts).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
         if (res.status === 401 && state.user && path !== '/api/auth/login' && path !== '/api/auth/activate') {
           setUser(null);

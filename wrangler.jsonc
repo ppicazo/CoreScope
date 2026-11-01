@@ -5,6 +5,12 @@
 {
   "name": "corescope",
   "compatibility_date": "2026-10-31",
+  // Wrangler runs this before every deploy and preview, so the dashboard
+  // build command can stay empty. It reads API_BASE, AUTH, CHANNEL and
+  // CLASSIC_URL from the build variables.
+  "build": {
+    "command": "bash scripts/pages/assemble.sh"
+  },
   "assets": {
     "directory": "./dist/pages"
   },

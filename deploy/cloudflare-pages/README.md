@@ -104,12 +104,13 @@ pointed at a staging server if you have one.
 
 Cloudflare also serves static sites as a Worker with static assets, built by
 Workers Builds. `wrangler.jsonc` at the repository root describes that Worker:
-it is named `corescope`, serves `dist/pages`, and has the `previews` block that
-`wrangler preview` needs. To use it:
+it is named `corescope`, runs `assemble.sh` before every deploy and preview,
+serves `dist/pages`, and has the `previews` block that `wrangler preview`
+needs. To use it:
 
 - name the Worker `corescope` (Workers Builds refuses a name that differs from
   `wrangler.jsonc`);
-- build command: `bash scripts/pages/assemble.sh`;
+- leave the build command empty;
 - deploy command: `npx wrangler deploy`; non-production branches:
   `npx wrangler preview`;
 - the same variables as in step 6, as build variables.

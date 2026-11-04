@@ -5918,3 +5918,71 @@ body.embed #app.app-fixed {
 .reported-links { display: flex; flex-wrap: wrap; gap: 6px; }
 .reported-links .btn-primary { text-decoration: none; padding: 4px 10px; font-size: 12px; }
 .reported-table td { white-space: normal; }
+
+/* ---- Demo: Halloween preview theme -----------------------------------
+ * A showcase for preview deployments: this branch's preview looks like
+ * this, while production and every other branch do not. The server sets
+ * its theme colours inline on <html>, so the overrides sit on <body>,
+ * which wins for everything inside it. */
+:root {
+  --halloween-orange: #ff7518;
+  --halloween-orange-light: #ff9a4d;
+  --halloween-orange-dark: #c2410c;
+  --halloween-orange-glow: rgba(255, 117, 24, 0.22);
+  --halloween-purple: #4c1d95;
+  --halloween-purple-dark: #1e0b36;
+  --halloween-tint: #fff1e6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --halloween-tint: #3b1f4a; }
+}
+[data-theme="dark"] { --halloween-tint: #3b1f4a; }
+
+body {
+  --accent: var(--halloween-orange);
+  --accent-hover: var(--halloween-orange-light);
+  --accent-strong: var(--halloween-orange-dark);
+  --nav-bg: var(--halloween-purple-dark);
+  --nav-bg2: var(--halloween-purple);
+  --nav-active-bg: var(--halloween-orange-glow);
+  --selected-bg: var(--halloween-tint);
+  --row-hover: var(--halloween-tint);
+  --section-bg: var(--halloween-tint);
+  --logo-accent: var(--halloween-orange-light);
+  --logo-accent-hi: var(--halloween-orange);
+}
+/* customize-v2.js paints the theme's nav gradient inline; !important wins. */
+.top-nav {
+  background: linear-gradient(100deg, var(--halloween-purple-dark) 0%, var(--halloween-purple) 60%, var(--halloween-orange-dark) 100%) !important;
+  border-bottom: 3px solid var(--halloween-orange);
+}
+/* The moon flies behind the nav content. Both halves are flex items, so
+   z-index lifts them without changing what their dropdowns position against. */
+.top-nav > .nav-left, .top-nav > .nav-right { z-index: 1; }
+.halloween-moon {
+  position: absolute; top: 10px; left: -40px;
+  width: 26px; height: 26px; color: var(--halloween-orange-light);
+  filter: drop-shadow(0 0 6px var(--halloween-orange));
+  pointer-events: none; z-index: 0;
+  animation: halloween-moon 14s linear infinite;
+}
+@keyframes halloween-moon {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(30vw, 6px) rotate(-12deg); }
+  50% { transform: translate(60vw, -2px) rotate(0deg); }
+  75% { transform: translate(90vw, 5px) rotate(12deg); }
+  100% { transform: translate(calc(100vw + 80px), 0) rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .halloween-moon { animation: none; left: auto; right: 12px; }
+}
+.halloween-pill {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  padding: 2px 10px; border-radius: 999px;
+  background: var(--halloween-orange); color: var(--halloween-purple-dark);
+  font-size: var(--fs-sm); font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .halloween-pill { display: none; }
+}

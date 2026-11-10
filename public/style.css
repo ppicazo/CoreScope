@@ -5940,3 +5940,153 @@ body.embed #app.app-fixed {
 .reported-links { display: flex; flex-wrap: wrap; gap: 6px; }
 .reported-links .btn-primary { text-decoration: none; padding: 4px 10px; font-size: 12px; }
 .reported-table td { white-space: normal; }
+
+/* ---- Demo: phosphor scope preview theme ---------------------------------
+ * A showcase for preview deployments: this branch's preview looks like an
+ * oscilloscope screen (green phosphor on black, a graticule, scanlines and a
+ * trace sweeping through the nav), while production and every other branch
+ * do not. One look in light and dark alike. The server and the customizer
+ * set theme colours inline on <html>, so the overrides sit on <body>, which
+ * wins for everything inside it. Alias tokens (--bg, --primary and so on)
+ * resolve on :root, so they are repeated here. */
+:root {
+  --scope-screen: #020b05;
+  --scope-panel: #06140a;
+  --scope-panel-2: #0a1d0f;
+  --scope-panel-3: #0f2816;
+  --scope-selected: #123a1d;
+  --scope-border: #1f4d2c;
+  --scope-trace: #4dff7c;
+  --scope-trace-dim: #2fcf5c;
+  --scope-text: #a3f5b8;
+  --scope-text-muted: #6fcf8a;
+  --scope-text-subtle: #4fa468;
+  --scope-ch2: #ffb53b;  /* the second channel: links and the logo's right half */
+  --scope-glow: rgba(77, 255, 124, 0.45);
+  --scope-wash: rgba(77, 255, 124, 0.12);
+  --scope-grid: rgba(77, 255, 124, 0.05);
+  --scope-grid-major: rgba(77, 255, 124, 0.11);
+  --scope-scanline: rgba(0, 0, 0, 0.18);
+}
+
+html { background: var(--scope-screen); }
+body {
+  color-scheme: dark;
+  --font: var(--mono);
+  --surface-0: var(--scope-screen);
+  --surface-1: var(--scope-panel);
+  --surface-2: var(--scope-panel-2);
+  --surface-3: var(--scope-panel-3);
+  --surface: var(--scope-panel);
+  --bg: var(--scope-panel);
+  --bg-secondary: var(--scope-panel-2);
+  --content-bg: var(--scope-screen);
+  --card-bg: var(--scope-panel-2);
+  --detail-bg: var(--scope-panel-2);
+  --section-bg: var(--scope-panel);
+  --input-bg: var(--scope-panel);
+  --row-stripe: var(--scope-panel);
+  --row-hover: var(--scope-panel-3);
+  --selected-bg: var(--scope-selected);
+  --hover-bg: var(--scope-wash);
+  --bg-hover: var(--scope-wash);
+  --border: var(--scope-border);
+  --text: var(--scope-text);
+  --text-primary: var(--scope-text);
+  --text-muted: var(--scope-text-muted);
+  --text-secondary: var(--scope-text-muted);
+  --text-subtle: var(--scope-text-subtle);
+  --accent: var(--scope-trace);
+  --primary: var(--scope-trace);
+  --accent-hover: var(--scope-text);
+  --accent-strong: var(--scope-trace-dim);
+  --accent-bg: var(--scope-wash);
+  --accent-border: var(--scope-border);
+  --text-on-accent: var(--scope-screen);
+  --link-color: var(--scope-ch2);
+  --nav-bg: var(--scope-screen);
+  --nav-bg2: var(--scope-panel-2);
+  --nav-text: var(--scope-trace);
+  --nav-text-muted: var(--scope-text-muted);
+  --nav-active-bg: var(--scope-wash);
+  --logo-accent: var(--scope-trace);
+  --logo-accent-hi: var(--scope-ch2);
+  --logo-muted: var(--scope-text-muted);
+  /* Role and status colours as the dark theme has them, for a dark screen. */
+  --role-repeater: var(--palette-red-500);
+  --role-companion: var(--palette-blue-500);
+  --role-room: var(--palette-green-600);
+  --role-sensor: var(--palette-amber-600);
+  --role-observer: var(--palette-purple-400);
+  --success: var(--palette-green-400);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-400);
+  --status-green-text: var(--palette-green-400);
+  --status-red-text: var(--palette-red-400);
+  --status-yellow-text: var(--palette-amber-300);
+  background-color: var(--scope-screen);
+  /* The graticule: major divisions every 80px, minor ticks every 16px. */
+  background-image:
+    linear-gradient(var(--scope-grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--scope-grid-major) 1px, transparent 1px),
+    linear-gradient(var(--scope-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--scope-grid) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+  background-attachment: fixed;
+}
+/* Phosphor glow on headings and the nav. Not on table text, which can run
+   to thousands of rows. */
+body h1, body h2, body h3, .top-nav .nav-brand, .top-nav .nav-link { text-shadow: 0 0 6px var(--scope-glow); }
+/* Scanlines over everything; they take no clicks. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 2147483000; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, var(--scope-scanline) 2px 3px);
+}
+
+/* customize-v2.js paints the theme's nav gradient inline; !important wins. */
+.top-nav {
+  background: linear-gradient(180deg, var(--scope-panel-2) 0%, var(--scope-screen) 100%) !important;
+  border-bottom: 1px solid var(--scope-trace-dim);
+  box-shadow: 0 0 14px var(--scope-glow);
+}
+/* The trace sweeps behind the nav content. Both halves are flex items, so
+   z-index lifts them without changing what their dropdowns position against.
+   The trace is one period wider than the nav and slides by one period, so
+   the loop is seamless and runs on the compositor. */
+.top-nav > .nav-left, .top-nav > .nav-right { z-index: 1; }
+.top-nav::after {
+  content: ""; position: absolute; top: 14px; left: -160px; right: 0; height: 24px;
+  background: var(--scope-trace); opacity: .5; pointer-events: none; z-index: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24'%3E%3Cg fill='none' stroke='white'%3E%3Cpath d='M0 12Q20-6 40 12T80 12T120 12T160 12' stroke-width='6' stroke-opacity='.25'/%3E%3Cpath d='M0 12Q20-6 40 12T80 12T120 12T160 12' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 160px 24px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24'%3E%3Cg fill='none' stroke='white'%3E%3Cpath d='M0 12Q20-6 40 12T80 12T120 12T160 12' stroke-width='6' stroke-opacity='.25'/%3E%3Cpath d='M0 12Q20-6 40 12T80 12T120 12T160 12' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 160px 24px repeat-x;
+  animation: scope-trace 2.4s linear infinite;
+}
+@keyframes scope-trace { to { transform: translateX(160px); } }
+@media (prefers-reduced-motion: reduce) {
+  .top-nav::after { animation: none; }
+}
+.scope-pill {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  padding: 2px 10px; border: 1px solid var(--scope-trace); border-radius: 999px;
+  background: var(--scope-wash); color: var(--scope-trace);
+  font-size: var(--fs-sm); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  white-space: nowrap; text-shadow: 0 0 6px var(--scope-glow);
+}
+@media (max-width: 600px) {
+  .scope-pill { display: none; }
+}
+
+/* Map tiles in phosphor. map.js picks light or dark tiles as the theme does,
+   so only the light ones are inverted. The live page's matrix mode keeps its
+   own filter. */
+.leaflet-container:not(.matrix-theme) .leaflet-tile-pane {
+  filter: invert(1) grayscale(1) brightness(.8) sepia(1) hue-rotate(70deg) saturate(2.5);
+}
+[data-theme="dark"] .leaflet-container:not(.matrix-theme) .leaflet-tile-pane {
+  filter: grayscale(1) brightness(1.1) sepia(1) hue-rotate(70deg) saturate(2.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .leaflet-container:not(.matrix-theme) .leaflet-tile-pane {
+    filter: grayscale(1) brightness(1.1) sepia(1) hue-rotate(70deg) saturate(2.5);
+  }
+}
